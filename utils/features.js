@@ -27,12 +27,21 @@ export const checkAuth = async (req) => {
     const cookies = req.headers.cookie;
 
     if (!cookies) return null;
+
     const cookieArray = cookies.split(';');
-    const token = cookieArray[0].split('=')[1];
-    console.log(token);
-    if (!token)
-        return null;
+    let token = null;
+
+    for (const cookie of cookieArray) {
+        const [cookieName, cookieValue] = cookie.trim().split('=');
+        if (cookieName === 'token') {
+            token = cookieValue;
+            break; // Exit the loop once we find the "token" cookie
+        }
+    }
+
+    if (!token) return null;
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return await User.findById(decoded._id);
 }
+
