@@ -24,13 +24,15 @@ export const generateToken = (_id) => {
 }
 
 export const checkAuth = async (req) => {
-    const cookie = req.headers.cookie;
-    // console.log(cookie);
-    if (!cookie) return null;
+    const cookies = req.headers.cookie;
 
-    const token = cookie.split("=")[1];
+    if (!cookies) return null;
+    const cookieArray = cookies.split(';');
+    const token = cookieArray[0].split('=')[1];
+    console.log(token);
+    if (!token)
+        return null;
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     return await User.findById(decoded._id);
 }
